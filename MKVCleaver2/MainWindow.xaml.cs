@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Forms;
 using NEbml.Core;
 using MessageBox = System.Windows.MessageBox;
@@ -39,8 +40,6 @@ namespace MKVCleaver2
 			{
 				foreach (var fileName in dialog.FileNames)
 				{
-					tvFiles.Items.Add(fileName);
-
 					// start process
 					var proc = new Process
 					{
@@ -68,7 +67,14 @@ namespace MKVCleaver2
 
 					proc.Close();
 
-					new EbmlParser().Parse(output);
+					var item = new TreeViewItem();
+					item.Header = Path.GetFileName(fileName);
+
+					var tracks = new EbmlParser().Parse(output);
+					foreach (var track in tracks)
+						item.Items.Add(string.Format("{0}: {1} ({2} - {3})", track.Type, track.Codec, track.Name, track.Language));
+
+					tvFiles.Items.Add(item);
 				}
 			}
 
