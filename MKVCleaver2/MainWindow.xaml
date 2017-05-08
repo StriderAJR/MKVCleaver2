@@ -31,7 +31,30 @@
                 </Grid.RowDefinitions>
                 <Button x:Name="btnAddFile" Content="Open MKV files to process..." Margin="5,5,3,5" Click="btnAddFile_Click"/>
                 <Button x:Name="btnRemoveFile" Content="Remove selected files from list" Margin="2,5,5,5" Grid.Column="1" IsEnabled="False" Click="btnRemoveFile_Click"/>
-                <TreeView x:Name="tvFiles" Margin="5,5,5,0" Grid.Row="1" Grid.ColumnSpan="2"/>
+                <TreeView x:Name="tvFiles" Margin="5,5,5,0" Grid.Row="1" Grid.ColumnSpan="2" VerticalAlignment="Top" Height="200">
+                    <TreeView.Resources>
+                        <HierarchicalDataTemplate DataType="{x:Type local:MkvFile}" ItemsSource="{Binding Tracks}">
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox x:Name="cbIsFileSelected" IsChecked="{Binding IsSelected}" Checked="cbIsFileSelected_Checked" Unchecked="cbIsFileSelected_Unchecked"></CheckBox>
+                                <TextBlock Text=" " />
+                                <TextBlock x:Name="tbFileName" Text="{Binding Name}"></TextBlock>
+                            </StackPanel>
+                        </HierarchicalDataTemplate>
+                        <DataTemplate DataType="{x:Type local:Track}">
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="cbIsSelected" IsChecked="{Binding IsSelected}" Checked="cbIsSelected_Checked" Unchecked="cbIsSelected_Unchecked"></CheckBox>
+                                <TextBlock Text=" " />
+                                <TextBlock Text="{Binding Type}" />
+                                <TextBlock Text=": " />
+                                <TextBlock Text="{Binding Name}" />
+                                <TextBlock Text=" (" />
+                                <TextBlock Text="{Binding Codec}" />
+                                <TextBlock Text=")" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </TreeView.Resources>
+                </TreeView>
+                <TextBox x:Name="tbExtractCommand" Height="147" Margin="5,0" Grid.Row="1" TextWrapping="Wrap" VerticalAlignment="Bottom" IsEnabled="False" AcceptsReturn="True" AcceptsTab="True" Grid.ColumnSpan="2"/>
             </Grid>
         </GroupBox>
         <GroupBox x:Name="groupBox1" Header="Tracks to extract (Batch Mode)" Margin="5" Grid.Row="1" Grid.Column="1">
@@ -39,24 +62,24 @@
         </GroupBox>
         <Button x:Name="btnLocateToolnix" Content="Locate MKVToolnix..." Margin="9,10,0,1" Grid.Column="1" HorizontalAlignment="Left" Width="142" Click="btnLocateToolnix_Click"/>
         <Button x:Name="btnAbout" Content="About" Margin="0,10,5,1" Grid.Column="1" HorizontalAlignment="Right" Width="67"/>
-        <GroupBox x:Name="groupBox2" Header="Filename options" Margin="5,1,6,0" Grid.Column="1" Grid.Row="2">
+        <GroupBox x:Name="groupBox2" Header="Filename options" Margin="5,1,5,0" Grid.Column="1" Grid.Row="2">
             <Grid>
                 <StackPanel HorizontalAlignment="Left" Margin="5,5,0,0" Height="29" VerticalAlignment="Top">
-                    <RadioButton x:Name="rbtnTrackFilename" Content="Track#_&lt;filename&gt;" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                    <RadioButton x:Name="rbtFilenameTrack" Content="&lt;filename&gt;_Track#" HorizontalAlignment="Left" VerticalAlignment="Top" RenderTransformOrigin="-0.071,-0.65" IsChecked="True"/>
+                    <RadioButton x:Name="rbtnTrackFilename" Content="Track#__&lt;filename&gt;" HorizontalAlignment="Left" VerticalAlignment="Top" IsEnabled="False"/>
+                    <RadioButton x:Name="rbtFilenameTrack" Content="&lt;filename&gt;__Track#" HorizontalAlignment="Left" VerticalAlignment="Top" RenderTransformOrigin="-0.071,-0.65" IsChecked="True" IsEnabled="False"/>
                 </StackPanel>
-                <CheckBox x:Name="cbUseTrackTypeName" Content="Use 'Audio', 'Video' and 'Subtitle'" Margin="5,39,5,0" VerticalAlignment="Top"/>
-                <Button x:Name="btnCustomFilename" Content="Custom..." Margin="0,10,5,0" VerticalAlignment="Top" HorizontalAlignment="Right" Width="71"/>
+                <CheckBox x:Name="cbUseTrackTypeName" Content="Use 'Audio', 'Video' and 'Subtitle'" Margin="5,39,5,0" VerticalAlignment="Top" IsEnabled="False"/>
+                <Button x:Name="btnCustomFilename" Content="Custom..." Margin="0,10,5,0" VerticalAlignment="Top" HorizontalAlignment="Right" Width="71" IsEnabled="False"/>
             </Grid>
         </GroupBox>
-        <GroupBox x:Name="groupBox4" Header="Output directory (leave blank to extract to the original directory)" Margin="10,5,2,2" Grid.Row="3">
+        <GroupBox x:Name="groupBox4" Header="Output directory (leave blank to extract to the original directory)" Margin="5,5,2,2" Grid.Row="3">
             <Grid Margin="0">
-                <TextBox x:Name="tboutputDir" Margin="5,5,0,5" TextWrapping="Wrap" HorizontalAlignment="Left" Width="398"/>
-                <Button x:Name="btnSetOutputDir" Content="..." HorizontalAlignment="Right" Margin="195,5,5,5" Width="20"/>
+                <TextBox x:Name="tboutputDir" Margin="5,5,0,5" TextWrapping="Wrap" HorizontalAlignment="Left" Width="398" IsEnabled="False"/>
+                <Button x:Name="btnSetOutputDir" Content="..." HorizontalAlignment="Right" Margin="195,5,5,5" Width="20" IsEnabled="False"/>
             </Grid>
         </GroupBox>
         <StatusBar Margin="0" Grid.ColumnSpan="2" Grid.Row="5"/>
-        <Button x:Name="btnExtract" Content="Extract Tracks!" Margin="5,5,6,2" Grid.Column="1" Grid.Row="3" IsEnabled="False"/>
+        <Button x:Name="btnExtract" Content="Extract Tracks!" Margin="5,5,5,2" Grid.Column="1" Grid.Row="3" IsEnabled="False"/>
         <Grid Margin="5,5,6,5" Grid.Row="4" Grid.ColumnSpan="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>

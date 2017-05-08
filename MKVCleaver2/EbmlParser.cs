@@ -8,14 +8,28 @@ using System.Threading.Tasks;
 
 namespace MKVCleaver2
 {
+	public class MkvFile
+	{
+		public string Path { get; set; }
+		public string Name { get; set; }
+		public List<Track> Tracks { get; set; }
+
+		public bool IsSelected { get; set; }
+	}
+
+
 	public class Track
 	{
-		public string Number { get; set; }
+		public int Number { get; set; }
 		public string UID { get; set; }
 		public string Type { get; set; }
 		public string Codec { get; set; }
 		public string Language { get; set; }
 		public string Name { get; set; }
+
+		public MkvFile Parent { get; set; }
+
+		public bool IsSelected { get; set; }
 	}
 
 	public class EbmlElement
@@ -85,8 +99,8 @@ namespace MKVCleaver2
 					if (clearLine.Contains(":"))
 					{
 						var property = new Property();
-						property.Name = clearLine.Split(':')[0].Trim();
-						property.Value = clearLine.Split(':')[1].Trim();
+						property.Name = clearLine.Split(new []{':'}, 2)[0].Trim();
+						property.Value = clearLine.Split(new[] { ':' }, 2)[1].Trim();
 						newElem = property;
 					}
 					else
@@ -127,26 +141,26 @@ namespace MKVCleaver2
 			}
 
 			List<Track> tracks = new List<Track>();
-			var segment = nodes.FirstOrDefault(x => x.Name.ToLower().Contains("сегмент"));
+			var segment = nodes.FirstOrDefault(x => x.Name.ToLower().Contains("segment"));
 			if (segment != null)
 			{
 				var temp = (Container) segment;
-				var tracksContainer = (Container)temp["Дорожки сегмента"];
+				var tracksContainer = (Container)temp["Segment tracks"];
 				foreach (Container trackContainer in tracksContainer.Elements)
 				{
 					Track track = new Track();
-					track.Number = ((Property) trackContainer["Номер дорожки"])?.Value;
-					track.UID = ((Property)trackContainer["UID дорожки"])?.Value;
-					track.Type = ((Property)trackContainer["Тип дорожки"])?.Value;
-					track.Codec = ((Property)trackContainer["Идентификатор кодека"]).Value;
-					track.Language = ((Property)trackContainer["Язык"])?.Value;
-					track.Name = ((Property)trackContainer["Имя"])?.Value;
+					track.Number = int.Parse(((Property) trackContainer["Track number"])?.Value.Split(' ')[0])-1;
+					track.UID = ((Property)trackContainer["Track UID"])?.Value;
+					track.Type = ((Property)trackContainer["Track type"])?.Value;
+					track.Codec = ((Property)trackContainer["Codec ID"]).Value;
+					track.Language = ((Property)trackContainer["Language"])?.Value;
+					track.Name = ((Property)trackContainer["Name"])?.Value;
 
 					tracks.Add(track);
 				}
 			}
 
-			return tracks;
+			return tracks.OrderBy(x => x.Number).ToList();
 		}
 	}
 }
