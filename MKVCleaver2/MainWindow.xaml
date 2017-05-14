@@ -58,7 +58,17 @@
             </Grid>
         </GroupBox>
         <GroupBox x:Name="groupBox1" Header="Tracks to extract (Batch Mode)" Margin="5" Grid.Row="1" Grid.Column="1">
-            <ListBox x:Name="lbBatchTracksToExtract" Margin="5,8,5,5"/>
+            <ListBox x:Name="lbBatchTracksToExtract" Margin="5,8,5,5">
+                <ListBox.ItemTemplate>
+                    <DataTemplate DataType="{x:Type local:BatchTrack}">
+                        <StackPanel Orientation="Horizontal">
+                            <CheckBox Name="cbBatchTrackIsSelected" IsChecked="{Binding IsSelected}" Checked="cbBatchTrackIsSelected_Checked" Unchecked="cbBatchTrackIsSelected_Unchecked"></CheckBox>
+                            <TextBlock Text=" " />
+                            <TextBlock Text="{Binding Name}" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
         </GroupBox>
         <Button x:Name="btnLocateToolnix" Content="Locate MKVToolnix..." Margin="9,10,0,1" Grid.Column="1" HorizontalAlignment="Left" Width="142" Click="btnLocateToolnix_Click"/>
         <Button x:Name="btnAbout" Content="About" Margin="0,10,5,1" Grid.Column="1" HorizontalAlignment="Right" Width="67"/>

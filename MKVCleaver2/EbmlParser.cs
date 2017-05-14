@@ -55,6 +55,43 @@ namespace MKVCleaver2
 		public event PropertyChangedEventHandler PropertyChanged;
 	}
 
+	public class BatchTrack
+	{
+		public string Name { get; set; }
+		public Track Track { get; set; }
+
+		private bool _isSelected;
+		public bool IsSelected
+		{
+			get { return _isSelected; }
+			set
+			{
+				_isSelected = value;
+				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsSelected"));
+			}
+		}
+
+		public event PropertyChangedEventHandler PropertyChanged;
+	}
+
+	public class TrackComparer : IEqualityComparer<Track>
+	{
+		public bool Equals(Track x, Track y)
+		{
+			return 
+				x.Name == y.Name && 
+				x.Codec == y.Codec && 
+				x.Type == y.Type && 
+				x.Language == y.Language && 
+				x.Number == y.Number;
+		}
+
+		public int GetHashCode(Track x)
+		{
+			return (x.Name + x.Codec + x.Type + x.Language + x.Number).GetHashCode();
+		}
+	}
+
 	public class EbmlElement
 	{
 		public string Name { get; set; }

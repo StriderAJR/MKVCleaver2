@@ -62,6 +62,7 @@ namespace MKVCleaver2
 			dialog.Filter = "MKV Files (*.mkv)|*.mkv";
 
 			ObservableCollection<MkvFile> items = new ObservableCollection<MkvFile>();
+			List<Track> intersection = new List<Track>();
 
 			if (dialog.ShowDialog() == true)
 			{
@@ -103,7 +104,25 @@ namespace MKVCleaver2
 				}
 			}
 
+			intersection.AddRange(items.First().Tracks);
+			foreach (var mkvFile in items)
+			{
+				intersection = intersection.Intersect(mkvFile.Tracks, new TrackComparer()).ToList();
+			}
+
 			tvFiles.ItemsSource = items;
+
+			ObservableCollection<BatchTrack> batchTracks = new ObservableCollection<BatchTrack>();
+			foreach (var track in intersection)
+			{
+				batchTracks.Add(new BatchTrack
+				{
+					Name = string.Format("{0}, {1} ({2})", track.Type, track.Language, track.Name),
+					Track = track
+				});
+			}
+			
+			lbBatchTracksToExtract.ItemsSource = batchTracks;
 			
 			ToggleButtonState();
 		}
@@ -188,6 +207,16 @@ namespace MKVCleaver2
 			var mkvFile = track.Parent;
 			track.IsSelected = false;
 			mkvFile.IsSelected = false;
+		}
+
+		private void cbBatchTrackIsSelected_Checked(object sender, RoutedEventArgs e)
+		{
+			
+		}
+
+		private void cbBatchTrackIsSelected_Unchecked(object sender, RoutedEventArgs e)
+		{
+			
 		}
 	}
 }
