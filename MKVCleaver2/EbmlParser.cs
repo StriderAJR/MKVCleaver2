@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Security.RightsManagement;
@@ -8,17 +9,28 @@ using System.Threading.Tasks;
 
 namespace MKVCleaver2
 {
-	public class MkvFile
+	public class MkvFile : INotifyPropertyChanged
 	{
 		public string Path { get; set; }
 		public string Name { get; set; }
 		public List<Track> Tracks { get; set; }
 
-		public bool IsSelected { get; set; }
+		private bool _isSelected;
+		public bool IsSelected
+		{
+			get { return _isSelected; }
+			set
+			{
+				_isSelected = value;
+				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsSelected"));
+			}
+		}
+
+		public event PropertyChangedEventHandler PropertyChanged;
 	}
 
 
-	public class Track
+	public class Track : INotifyPropertyChanged
 	{
 		public int Number { get; set; }
 		public string UID { get; set; }
@@ -29,7 +41,18 @@ namespace MKVCleaver2
 
 		public MkvFile Parent { get; set; }
 
-		public bool IsSelected { get; set; }
+		private bool _isSelected;
+		public bool IsSelected
+		{
+			get { return _isSelected; }
+			set
+			{
+				_isSelected = value;
+				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsSelected"));
+			}
+		}
+
+		public event PropertyChangedEventHandler PropertyChanged;
 	}
 
 	public class EbmlElement

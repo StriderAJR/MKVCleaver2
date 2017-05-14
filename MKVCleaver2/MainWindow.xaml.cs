@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -60,7 +61,7 @@ namespace MKVCleaver2
 			dialog.Multiselect = true;
 			dialog.Filter = "MKV Files (*.mkv)|*.mkv";
 
-			List<MkvFile> items = new List<MkvFile>();
+			ObservableCollection<MkvFile> items = new ObservableCollection<MkvFile>();
 
 			if (dialog.ShowDialog() == true)
 			{
@@ -103,7 +104,7 @@ namespace MKVCleaver2
 			}
 
 			tvFiles.ItemsSource = items;
-
+			
 			ToggleButtonState();
 		}
 
@@ -153,8 +154,6 @@ namespace MKVCleaver2
 			var mkvFile = (MkvFile) checkBox.DataContext;
 			mkvFile.IsSelected = true;
 			mkvFile.Tracks.ForEach(x => x.IsSelected = true);
-
-			tvFiles.Items.Refresh();
 		}
 
 		private void cbIsFileSelected_Unchecked(object sender, RoutedEventArgs e)
@@ -163,8 +162,6 @@ namespace MKVCleaver2
 			var mkvFile = (MkvFile)checkBox.DataContext;
 			mkvFile.IsSelected = false;
 			mkvFile.Tracks.ForEach(x => x.IsSelected = false);
-
-			tvFiles.Items.Refresh();
 		}
 
 		private void cbIsSelected_Checked(object sender, RoutedEventArgs e)
@@ -182,8 +179,6 @@ namespace MKVCleaver2
 			}
 			if (isAllSelected)
 				mkvFile.IsSelected = true;
-
-			tvFiles.Items.Refresh();
 		}
 
 		private void cbIsSelected_Unchecked(object sender, RoutedEventArgs e)
@@ -193,8 +188,6 @@ namespace MKVCleaver2
 			var mkvFile = track.Parent;
 			track.IsSelected = false;
 			mkvFile.IsSelected = false;
-
-			tvFiles.Items.Refresh();
 		}
 	}
 }
