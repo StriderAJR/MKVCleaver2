@@ -218,5 +218,58 @@ namespace MKVCleaver2
 		{
 			
 		}
-	}
+        //here bad student work
+        private void btnExtract_Click(object sender, RoutedEventArgs e)
+        {            
+            foreach (MKVCleaver2.MkvFile file in this.tvFiles.Items)
+            {
+                string commandstr = string.Empty;
+                if (file.IsSelected == true)
+                {
+                    foreach (MKVCleaver2.BatchTrack track in this.lbBatchTracksToExtract.Items)
+                    {
+                        if (track.IsSelected == true)
+                        {
+                            commandstr += track.Track.Number.ToString() + ":" + track.Track.Type + "_" + track.Track.Language + ".";
+                            switch (track.Track.Type)
+                            {
+                                case "video":
+                                    {
+                                        commandstr += "H.264";
+                                        break;
+                                    }
+                                case "audio":
+                                    {
+                                        commandstr += "mp3";
+                                        break;
+                                    }
+                                case "subtitles":
+                                    {
+                                        commandstr += "ass";
+                                        break;
+                                    }
+                                default:
+                                    break;
+                            }
+                        }
+                    }
+                    var proc = new Process
+                    {
+                      
+                        StartInfo = new ProcessStartInfo
+                        {
+                            FileName = SettingsHelper.GetMkvExtractPath(),
+                            UseShellExecute = false,
+                            RedirectStandardOutput = true,
+                            CreateNoWindow = false,
+                            Arguments = " tracks \"" + file.Path + "\" " + commandstr                         
+
+                        }
+                    };
+                    proc.StartInfo.StandardOutputEncoding = Encoding.UTF8;
+                    proc.Start();
+                }
+            }              
+        }
+    }
 }
