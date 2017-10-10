@@ -9,6 +9,9 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
 using NEbml.Core;
+using System.Threading.Tasks;
+using System.Threading;
+
 using CheckBox = System.Windows.Controls.CheckBox;
 using MessageBox = System.Windows.MessageBox;
 using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
@@ -220,7 +223,9 @@ namespace MKVCleaver2
 		}
         //here bad student work
         private void btnExtract_Click(object sender, RoutedEventArgs e)
-        {            
+        {
+            int CountTrack = 0;
+
             foreach (MKVCleaver2.MkvFile file in this.tvFiles.Items)
             {
                 string commandstr = string.Empty;
@@ -228,48 +233,59 @@ namespace MKVCleaver2
                 {
                     foreach (MKVCleaver2.BatchTrack track in this.lbBatchTracksToExtract.Items)
                     {
+                        
                         if (track.IsSelected == true)
                         {
-                            commandstr += track.Track.Number.ToString() + ":" + track.Track.Type + "_" + track.Track.Language + ".";
-                            switch (track.Track.Type)
+                            CountTrack++;
+                            if (tboutputDir.Text == string.Empty)
                             {
-                                case "video":
-                                    {
-                                        commandstr += "H.264";
-                                        break;
-                                    }
-                                case "audio":
-                                    {
-                                        commandstr += "mp3";
-                                        break;
-                                    }
-                                case "subtitles":
-                                    {
-                                        commandstr += "ass";
-                                        break;
-                                    }
-                                default:
-                                    break;
+                                string standartPath = file.Path.Substring(0, file.Path.Length - file.Name.Length);
+                                commandstr += track.Track.Number.ToString() + ":\"" + standartPath + file.Name + "_" + track.Track.Type + "_" + track.Track.Language + "." + SettingsHelper.GetCodecContainerExtension(track.Track.Codec) + "\""; 
                             }
-                        }
+                            else
+                            {
+                                commandstr += track.Track.Number.ToString() + ":\"" + tboutputDir.Text + "\\" + file.Name + "_" + track.Track.Type + "_" + track.Track.Language + "." + SettingsHelper.GetCodecContainerExtension(track.Track.Codec) + "\"";
+                            }                            
+                        }                       
                     }
                     var proc = new Process
-                    {
-                      
+                    {                               
                         StartInfo = new ProcessStartInfo
                         {
                             FileName = SettingsHelper.GetMkvExtractPath(),
                             UseShellExecute = false,
                             RedirectStandardOutput = true,
-                            CreateNoWindow = false,
-                            Arguments = " tracks \"" + file.Path + "\" " + commandstr                         
-
+                            CreateNoWindow = true,                            
+                            Arguments = " tracks \"" + file.Path + "\" " + commandstr,
+                            StandardOutputEncoding = Encoding.UTF8
                         }
                     };
-                    proc.StartInfo.StandardOutputEncoding = Encoding.UTF8;
                     proc.Start();
+
+                    //for progressbar
+                    StreamReader sr = proc.StandardOutput;                    
+                    string buffstr;
+
+                    while ((buffstr = sr.ReadLine()) != null)
+                    {
+                        if (buffstr.Contains("Progress: "))
+                        {
+                            if (buffstr.Length == 12)
+                            {
+                                pbCurrentFile.Value = int.Parse(buffstr.Substring(10, 1));
+                            }
+                            if (buffstr.Length == 13)
+                            {
+                                pbCurrentFile.Value = int.Parse(buffstr.Substring(10, 2));                                
+                            }
+                        }
+                       
+                    }
+                                        
+
                 }
             }              
         }
+        
     }
 }
